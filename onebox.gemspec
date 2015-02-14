@@ -23,6 +23,7 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency "nokogiri", "~> 1.6.1"
   spec.add_runtime_dependency "moneta", "~> 0.7"
   spec.add_runtime_dependency "mechanize", "~> 2.7.2"
+  spec.add_runtime_dependency "koala", "~> 1.10.0"
 
   spec.add_development_dependency "bundler", "~> 1.3"
   spec.add_development_dependency "rake", "~> 10.0"
