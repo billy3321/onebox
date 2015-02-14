@@ -1,6 +1,6 @@
 module Onebox
   module Engine
-    class GithubBlobOnebox
+    class FacebookOnebox
       include Engine
       include LayoutSupport
 
@@ -24,7 +24,7 @@ module Onebox
         }
         result[:image] = photo_content["source"]
         result[:title] = photo_content["name"][0..20]
-        result[:content] = photo_content["name"]
+        result[:description] = photo_content["name"].gsub("\n", "<br />")
         result[:source_url] = photo_content["link"]
         result[:date] = Time.parse(photo_content["created_time"])
         img_width = 0
@@ -36,13 +36,15 @@ module Onebox
         end
         comment_id = photo_id + '/comments'
         comments = fb_graph_api.get_object(comment_id, {limit: 100000})
+        puts comments
         comments.each do |c|
           comment_author = c["from"]["name"]
           comment = {}
           comment[:author] = comment_author
-          comment[:content] = c["message"]
+          comment[:content] = c["message"].gsub("\n", "<br />")
           result[:comments] << comment
         end
+        puts result
         return result
       end
 
@@ -60,20 +62,22 @@ module Onebox
         else
           result[:title] = post_content["message"][0..20]
         end
-        result[:content] = post_content["message"]
+        result[:description] = post_content["message"].gsub("\n", "<br />")
         result[:image] = post_content["picture"] if post_content["picture"]
         result[:has_image] = true if post_content["picture"]
         result[:link] = post_content["link"] if post_content["link"]
         result[:date] = Time.parse(post_content["created_time"])
         comment_id = post_id + '/comments'
         comments = fb_graph_api.get_object(comment_id, {limit: 100000})
+        puts comments
         comments.each do |c|
           comment_author = c["from"]["name"]
           comment = {}
           comment[:author] = comment_author
-          comment[:content] = c["message"]
+          comment[:content] = c["message"].gsub("\n", "<br />")
           result[:comments] << comment
         end
+        puts result
         return result
       end
 
@@ -87,20 +91,22 @@ module Onebox
           comments: []
         }
         result[:title] = link_content["message"]["name"]
-        result[:content] = link_content["message"]
+        result[:description] = link_content["message"].gsub("\n", "<br />")
         result[:link] = link_content["link"]
         result[:image] = link_content["picture"]
         result[:date] = Time.parse(link_content["created_time"])
 
         comment_id = link_id + '/comments'
         comments = fb_graph_api.get_object(comment_id, {limit: 100000})
+        puts comments
         comments.each do |c|
           comment_author = c["from"]["name"]
           comment = {}
           comment[:author] = comment_author
-          comment[:content] = c["message"]
+          comment[:content] = c["message"].gsub("\n", "<br />")
           result[:comments] << comment
         end
+        puts result
         return result
       end
 
@@ -109,25 +115,23 @@ module Onebox
         path_elements = source_uri.path.split('/')
         if path_elements[1] == 'photo.php'
           photo_id = CGI::parse(source_uri.query)['fbid'].first
-          parse_fb_photo(photo_id)
+          return parse_fb_photo(photo_id)
         elsif path_elements[1] == 'permalink.php'
           link_id = CGI::parse(source_uri.query)['story_fbid'].first
-          result = parse_fb_link(link_id)
+          return parse_fb_link(link_id)
         elsif path_elements[2] == 'photos'
           photo_id = path_elements.last
-          parse_fb_photo(photo_id)
+          return parse_fb_photo(photo_id)
         elsif path_elements[2] == 'posts'
           fb_user_name = path_elements[1]
           fb2_graph_api = Koala::Facebook::API.new
           fb_user_id = fb2_graph_api.get_object(fb_user_name)['id']
           post_id = [fb_user_id, path_elements.last].join('_')
-          parse_fb_post(post_id)
+          return parse_fb_post(post_id)
         else
           return false
         end
-
       end
-
     end
   end
 end
