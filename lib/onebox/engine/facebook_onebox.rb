@@ -4,7 +4,12 @@ module Onebox
       include Engine
       include LayoutSupport
 
-      matches_regexp(/^(https?:\/\/)(www.facebook.com\/)(.)+\/?$/)
+      if ENV['FACEBOOK_APP_ID'] and ENV['FACEBOOK_APP_SECRET']
+        matches_regexp(/^(https?:\/\/)(www.facebook.com\/)(.)+\/?$/)
+      else
+        # make it match nothing
+        matches_regexp(/[^\s\S]/)
+      end
 
       def get_app_fb_graph_api
         # get FB app access token
@@ -14,12 +19,12 @@ module Onebox
       end
 
       def parse_fb_photo(photo_id)
-        # 解析 FB 照片內容
+        # Parse fb photo
         fb_graph_api = get_app_fb_graph_api
         photo_content = fb_graph_api.get_object(photo_id)
         result = {
           link: link,
-          has_image: true,
+          has_image?: true,
           comments: []
         }
         result[:image] = photo_content["source"]
@@ -47,22 +52,22 @@ module Onebox
       end
 
       def parse_fb_post(post_id)
-        # 解析 FB 貼文內容
+        # Parse fb post
         fb_graph_api = get_app_fb_graph_api
         post_content = fb_graph_api.get_object(post_id)
         result = {
           link: link,
-          has_image: false,
+          has_image?: false,
           comments: []
         }
         if post_content["name"]
           result[:title] = post_content["name"].strip
         else
-          result[:title] = post_content["message"].strip.split("\n")[0][0..20]
+          result[:title] = post_content["message"].to_s.strip.split("\n")[0][0..20]
         end
-        result[:description] = post_content["message"].gsub("\n", "<br />")
+        result[:description] = post_content["message"].to_s.gsub("\n", "<br />")
         result[:image] = post_content["picture"] if post_content["picture"]
-        result[:has_image] = true if post_content["picture"]
+        result[:has_image?] = true if post_content["picture"]
         result[:link] = post_content["link"] if post_content["link"]
         result[:date] = Time.parse(post_content["created_time"])
         comment_id = post_id + '/comments'
@@ -78,12 +83,13 @@ module Onebox
       end
 
       def parse_fb_link(link_id)
-        # 解析 FB 分享連結內容
+        # Parse fb share link
         fb_graph_api = get_app_fb_graph_api
         link_content = fb_graph_api.get_object(link_id)
+        puts link_content
         result = {
           link: link,
-          has_image: true,
+          has_image?: true,
           comments: []
         }
         result[:title] = link_content["message"]["name"]
@@ -123,7 +129,7 @@ module Onebox
           post_id = [fb_user_id, path_elements.last].join('_')
           return parse_fb_post(post_id)
         else
-          return false
+          raise Net::HTTPError
         end
       end
     end
