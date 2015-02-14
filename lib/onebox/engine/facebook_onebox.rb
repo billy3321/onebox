@@ -24,7 +24,7 @@ module Onebox
         }
         result[:image] = photo_content["source"]
         result[:title] = photo_content["name"][0..20]
-        result[:content] = photo_content["name"].gsub("\n", "<br />")
+        result[:content] = photo_content["name"]
         result[:source_url] = photo_content["link"]
         result[:date] = Time.parse(photo_content["created_time"])
         img_width = 0
@@ -40,7 +40,7 @@ module Onebox
           comment_author = c["from"]["name"]
           comment = {}
           comment[:author] = comment_author
-          comment[:content] = c["message"].gsub("\n", "<br />")
+          comment[:content] = c["message"]
           result[:comments] << comment
         end
         return result
@@ -60,7 +60,7 @@ module Onebox
         else
           result[:title] = post_content["message"][0..20]
         end
-        result[:content] = post_content["message"].gsub("\n", "<br />")
+        result[:content] = post_content["message"]
         result[:image] = post_content["picture"] if post_content["picture"]
         result[:has_image] = true if post_content["picture"]
         result[:link] = post_content["link"] if post_content["link"]
@@ -71,7 +71,7 @@ module Onebox
           comment_author = c["from"]["name"]
           comment = {}
           comment[:author] = comment_author
-          comment[:content] = c["message"].gsub("\n", "<br />")
+          comment[:content] = c["message"]
           result[:comments] << comment
         end
         return result
@@ -87,7 +87,7 @@ module Onebox
           comments: []
         }
         result[:title] = link_content["message"]["name"]
-        result[:content] = link_content["message"].gsub("\n", "<br />")
+        result[:content] = link_content["message"]
         result[:link] = link_content["link"]
         result[:image] = link_content["picture"]
         result[:date] = Time.parse(link_content["created_time"])
@@ -98,7 +98,7 @@ module Onebox
           comment_author = c["from"]["name"]
           comment = {}
           comment[:author] = comment_author
-          comment[:content] = c["message"].gsub("\n", "<br />")
+          comment[:content] = c["message"]
           result[:comments] << comment
         end
         return result
