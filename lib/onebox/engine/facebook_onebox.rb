@@ -63,15 +63,19 @@ module Onebox
           comments: []
         }
         if post_content["message"]
-          result[:title] = post_content["name"].to_s.strip
+          if post_content["name"]
+            result[:title] = post_content["name"].to_s.strip
+          else
+            result[:title] = post_content["message"].to_s.strip.split("\n")[0][0..20]
+          end
           result[:description] = post_content["message"].to_s.gsub("\n", "<br />")
         else
           result[:title] = post_content["name"].to_s.strip.split("\n")[0][0..20]
-          result[:description] = post_content["name"].to_s.gsub("\n", "<br />")
+          result[:description] = post_content["description"].to_s.gsub("\n", "<br />")
         end
         result[:image] = post_content["picture"] if post_content["picture"]
         result[:has_image?] = true if post_content["picture"]
-        result[:link] = post_content["link"] if post_content["link"]
+        result[:source_url] = post_content["link"] if post_content["link"]
         result[:date] = Time.parse(post_content["created_time"])
         comment_id = post_id + '/comments'
         comments = fb_graph_api.get_object(comment_id, {limit: 100000})
@@ -95,10 +99,11 @@ module Onebox
           has_image?: true,
           comments: []
         }
-        result[:title] = link_content["message"]["name"]
+        result[:title] = link_content["message"].to_s.strip.split("\n")[0][0..20]
         result[:description] = link_content["message"].gsub("\n", "<br />")
-        result[:link] = link_content["link"]
-        result[:image] = link_content["picture"]
+        result[:source_url] = link_content["link"] if link_content["link"]
+        result[:image] = post_content["picture"] if post_content["picture"]
+        result[:has_image?] = true if post_content["picture"]
         result[:date] = Time.parse(link_content["created_time"])
 
         comment_id = link_id + '/comments'
