@@ -23,7 +23,7 @@ module Onebox
           comments: []
         }
         result[:image] = photo_content["source"]
-        result[:title] = photo_content["name"][0..20]
+        result[:title] = photo_content["name"].strip.split("\n")[0][0..20]
         result[:description] = photo_content["name"].gsub("\n", "<br />")
         result[:source_url] = photo_content["link"]
         result[:date] = Time.parse(photo_content["created_time"])
@@ -36,7 +36,6 @@ module Onebox
         end
         comment_id = photo_id + '/comments'
         comments = fb_graph_api.get_object(comment_id, {limit: 100000})
-        puts comments
         comments.each do |c|
           comment_author = c["from"]["name"]
           comment = {}
@@ -44,7 +43,6 @@ module Onebox
           comment[:content] = c["message"].gsub("\n", "<br />")
           result[:comments] << comment
         end
-        puts result
         return result
       end
 
@@ -58,9 +56,9 @@ module Onebox
           comments: []
         }
         if post_content["name"]
-          result[:title] = post_content["name"]
+          result[:title] = post_content["name"].strip
         else
-          result[:title] = post_content["message"][0..20]
+          result[:title] = post_content["message"].strip.split("\n")[0][0..20]
         end
         result[:description] = post_content["message"].gsub("\n", "<br />")
         result[:image] = post_content["picture"] if post_content["picture"]
@@ -69,7 +67,6 @@ module Onebox
         result[:date] = Time.parse(post_content["created_time"])
         comment_id = post_id + '/comments'
         comments = fb_graph_api.get_object(comment_id, {limit: 100000})
-        puts comments
         comments.each do |c|
           comment_author = c["from"]["name"]
           comment = {}
@@ -77,7 +74,6 @@ module Onebox
           comment[:content] = c["message"].gsub("\n", "<br />")
           result[:comments] << comment
         end
-        puts result
         return result
       end
 
@@ -98,7 +94,6 @@ module Onebox
 
         comment_id = link_id + '/comments'
         comments = fb_graph_api.get_object(comment_id, {limit: 100000})
-        puts comments
         comments.each do |c|
           comment_author = c["from"]["name"]
           comment = {}
@@ -106,7 +101,6 @@ module Onebox
           comment[:content] = c["message"].gsub("\n", "<br />")
           result[:comments] << comment
         end
-        puts result
         return result
       end
 
