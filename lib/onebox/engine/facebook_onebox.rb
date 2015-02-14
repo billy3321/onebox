@@ -19,7 +19,7 @@ module Onebox
         photo_content = fb_graph_api.get_object(photo_id)
         result = {
           link: link,
-          image?: true,
+          has_image: true,
           comments: []
         }
         result[:image] = photo_content["source"]
@@ -52,7 +52,7 @@ module Onebox
         post_content = fb_graph_api.get_object(post_id)
         result = {
           link: link,
-          image?: false,
+          has_image: false,
           comments: []
         }
         if post_content["name"]
@@ -62,7 +62,7 @@ module Onebox
         end
         result[:content] = post_content["message"].gsub("\n", "<br />")
         result[:image] = post_content["picture"] if post_content["picture"]
-        result[:image?] = true if post_content["picture"]
+        result[:has_image] = true if post_content["picture"]
         result[:link] = post_content["link"] if post_content["link"]
         result[:date] = Time.parse(post_content["created_time"])
         comment_id = post_id + '/comments'
@@ -83,7 +83,7 @@ module Onebox
         link_content = fb_graph_api.get_object(link_id)
         result = {
           link: link,
-          image?: true,
+          has_image: true,
           comments: []
         }
         result[:title] = link_content["message"]["name"]
