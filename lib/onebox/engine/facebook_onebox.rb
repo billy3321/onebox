@@ -11,6 +11,8 @@ module Onebox
         matches_regexp(/[^\s\S]/)
       end
 
+      private
+
       def get_app_fb_graph_api
         # get FB app access token
         @fb_app_graph_api ||= Koala::Facebook::API.new([
@@ -60,12 +62,13 @@ module Onebox
           has_image?: false,
           comments: []
         }
-        if post_content["name"]
-          result[:title] = post_content["name"].strip
+        if post_content["message"]
+          result[:title] = post_content["name"].to_s.strip
+          result[:description] = post_content["message"].to_s.gsub("\n", "<br />")
         else
-          result[:title] = post_content["message"].to_s.strip.split("\n")[0][0..20]
+          result[:title] = post_content["name"].to_s.strip.split("\n")[0][0..20]
+          result[:description] = post_content["name"].to_s.gsub("\n", "<br />")
         end
-        result[:description] = post_content["message"].to_s.gsub("\n", "<br />")
         result[:image] = post_content["picture"] if post_content["picture"]
         result[:has_image?] = true if post_content["picture"]
         result[:link] = post_content["link"] if post_content["link"]
