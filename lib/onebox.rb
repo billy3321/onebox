@@ -8,8 +8,8 @@ require "moneta"
 require "cgi"
 require "net/http"
 require "digest"
-require 'mechanize'
-require 'koala'
+require "mechanize"
+require "koala"
 
 module Onebox
   DEFAULTS = {
