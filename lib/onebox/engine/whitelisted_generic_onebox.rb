@@ -19,6 +19,7 @@ module Onebox
           8tracks.com
           about.com
           answers.com
+          arstechnica.com
           ask.com
           battle.net
           bbc.co.uk
@@ -53,6 +54,7 @@ module Onebox
           forbes.com
           foxnews.com
           funnyordie.com
+          gfycat.com
           groupon.com
           howtogeek.com
           huffingtonpost.com
@@ -69,6 +71,7 @@ module Onebox
           kickstarter.com
           kinomap.com
           liveleak.com
+          livestream.com
           lessonplanet.com
           mashable.com
           meetup.com
@@ -128,7 +131,7 @@ module Onebox
       # include the entire page HTML. However for some providers like Imgur it allows us
       # to return gifv and galleries.
       def self.default_html_providers
-        ['Imgur', 'Meetup']
+        ['Imgur', 'Meetup', 'Gfycat']
       end
 
       def self.html_providers
@@ -150,7 +153,7 @@ module Onebox
       end
 
       def self.default_rewrites
-        %w(slideshare.net imgur.com dailymotion.com)
+        %w(slideshare.net imgur.com dailymotion.com livestream.com)
       end
 
       def self.host_matches(uri, list)
