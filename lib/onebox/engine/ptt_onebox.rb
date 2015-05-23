@@ -12,7 +12,9 @@ module Onebox
         source_uri = URI.parse(link)
         if source_uri.path.include?('Gossiping')
           agent = Mechanize.new
-          html = agent.post('https://www.ptt.cc/ask/over18', {from: source_uri.path, yes: 'yes'})
+          cookie = Mechanize::Cookie.new("over18", "1")
+          agent.cookie_jar.add(source_uri, cookie)
+          html = agent.get(link)
           @raw = Nokogiri::HTML(html.body)
         else
           agent = Mechanize.new
